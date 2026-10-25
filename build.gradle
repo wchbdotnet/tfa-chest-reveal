@@ -1,0 +1,27 @@
+plugins { id 'java' }
+repositories {
+    maven { url = 'https://repo.runelite.net' }
+    mavenCentral()
+}
+def runeLiteVersion = 'latest.release'
+dependencies {
+    compileOnly group: 'net.runelite', name: 'client', version: runeLiteVersion
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:4.11.0'
+    testImplementation group: 'net.runelite', name: 'client', version: runeLiteVersion
+    testImplementation group: 'net.runelite', name: 'jshell', version: runeLiteVersion
+}
+group = 'net.iviystical'
+version = '0.1.0'
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release.set(11)
+}
+tasks.register('run', JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'net.iviystical.tfachestreveal.TfaChestRevealLauncher'
+    def bundledJava = file("${System.getenv('LOCALAPPDATA')}/RuneLite/jre/bin/java.exe")
+    if (bundledJava.exists()) { executable = bundledJava }
+    jvmArgs '-ea'
+    args '--developer-mode', '--debug'
+}
